@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚜 FarmRide - गाडी बुकिंग</title>
+    <style>
+        /* ==================== FONTS ==================== */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Spectral:wght@600;700&display=swap');
+        
+        /* ==================== CSS VARIABLES ==================== */
+        :root {
+            /* Earthy, Farmer-Friendly Palette */
+            --earth-brown: #5D4E37;
+            --soil-dark: #3A2F23;
+            --wheat-gold: #F4C430;
+            --crop-green: #4A7C59;
+            --leaf-green: #7CB342;
+            --sky-blue: #87CEEB;
+            --sunset-orange: #FF8C42;
+            --clay-red: #C1554A;
+            --cream: #FFF8E7;
+            --off-white: #FFFEF9;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --shadow-heavy: rgba(0, 0, 0, 0.3);
+            
+            /* Gradients */
+            --gradient-earth: linear-gradient(135deg, #5D4E37 0%, #3A2F23 100%);
+            --gradient-green: linear-gradient(135deg, #4A7C59 0%, #7CB342 100%);
+            --gradient-sunset: linear-gradient(135deg, #FF8C42 0%, #F4C430 100%);
+            
+            /* Typography */
+            --font-display: 'Spectral', serif;
+            --font-body: 'Poppins', sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 999px;
+        }
+        
+        /* ==================== RESET & BASE STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--soil-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 179, 66, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(244, 196, 48, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* ==================== TYPOGRAPHY ==================== */
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--earth-brown);
+        }
+        
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: var(--crop-green);
+        }
+        
+        h3 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--earth-brown);
+        }
+        
+        /* ==================== CONTAINER ==================== */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ==================== HEADER ==================== */
+        .header {
+            background: var(--gradient-earth);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 8px 32px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .header-logo .icon {
+            font-size: 3rem;
+            animation: bounce 2s infinite;
+        }
+        
+        .header-title {
+            color: var(--off-white);
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin: 0;
+        }
+        
+        .header-subtitle {
+            color: var(--wheat-gold);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-full);
+            color: var(--off-white);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* ==================== NAVIGATION ==================== */
+        .nav-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            padding: var(--space-sm);
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 16px var(--shadow);
+            animation: fadeIn 0.8s ease-out 0.2s both;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: var(--space-md) var(--space-lg);
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--earth-brown);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+        }
+        
+        .nav-tab:hover {
+            background: var(--cream);
+            transform: translateY(-2px);
+        }
+        
+        .nav-tab.active {
+            background: var(--gradient-green);
+            color: white;
+            border-color: var(--crop-green);
+            box-shadow: 0 4px 16px rgba(74, 124, 89, 0.3);
+        }
+        
+        .nav-tab .icon {
+            font-size: 1.5rem;
+        }
+        
+        /* ==================== BUTTONS ==================== */
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            text-decoration: none;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-heavy);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-green);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--gradient-sunset);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--crop-green);
+            border: 2px solid var(--crop-green);
+        }
+        
+        .btn-danger {
+            background: var(--clay-red);
+            color: white;
+        }
+        
+        /* ==================== CARDS ==================== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: 0 8px 24px var(--shadow);
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.6s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-green);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px var(--shadow-heavy);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        /* Driver Card Specific */
+        .driver-card {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .driver-header {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+        
+        .driver-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: 4px solid var(--wheat-gold);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .driver-info h3 {
+            margin-bottom: var(--space-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .driver-phone {
+            color: var(--crop-green);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .vehicle-section {
+            background: var(--cream);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--leaf-green);
+        }
+        
+        .vehicle-photo {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-sm);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .vehicle-type {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-md);
+            background: white;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: var(--space-sm);
+        }
+        
+        .vehicle-type.tractor {
+            color: var(--crop-green);
+            border: 2px solid var(--crop-green);
+        }
+        
+        .vehicle-type.truck {
+            color: var(--clay-red);
+            border: 2px solid var(--clay-red);
+        }
+        
+        .vehicle-type.tempo {
+            color: var(--sunset-orange);
+            border: 2px solid var(--sunset-orange);
+        }
+        
+        .vehicle-type.mini-truck {
+            color: var(--earth-brown);
+            border: 2px solid var(--earth-brown);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .status-badge.available {
+            background: rgba(124, 179, 66, 0.2);
+            color: var(--leaf-green);
+        }
+        
+        .status-badge.booked {
+            background: rgba(255, 140, 66, 0.2);
+            color: var(--sunset-orange);
+        }
+        
+        .status-badge.completed {
+            background: rgba(135, 206, 235, 0.2);
+            color: var(--sky-blue);
+        }
+        
+        /* ==================== RIDE CARD ==================== */
+        .ride-card {
+            border-left: 6px solid var(--crop-green);
+        }
+        
+        .ride-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--space-md);
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+        
+        .ride-date-time {
+            background: var(--gradient-sunset);
+            color: white;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+        }
+        
+        .ride-date-time .date {
+            font-size: 1.3rem;
+            display: block;
+        }
+        
+        .ride-date-time .time {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .ride-route {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--cream);
+            border-radius: var(--radius-md);
+            margin: var(--space-md) 0;
+        }
+        
+        .location {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .location-label {
+            font-size: 0.85rem;
+            color: var(--crop-green);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .location-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--soil-dark);
+            margin-top: var(--space-xs);
+        }
+        
+        .route-arrow {
+            font-size: 2rem;
+            color: var(--crop-green);
+            animation: slideRight 2s infinite;
+        }
+        
+        .ride-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm);
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--cream);
+        }
+        
+        .detail-item .icon {
+            font-size: 1.5rem;
+        }
+        
+        .detail-item .text {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        /* ==================== FORMS ==================== */
+        .form-container {
+            background: white;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px var(--shadow);
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-md);
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--earth-brown);
+            margin-bottom: var(--space-xs);
+            font-size: 1.05rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--cream);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: var(--font-body);
+            transition: all 0.3s ease;
+            background: var(--off-white);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--crop-green);
+            box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.1);
+        }
+        
+        /* ==================== EMPTY STATE ==================== */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xl);
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .empty-state .icon {
+            font-size: 5rem;
+            margin-bottom: var(--space-md);
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: var(--space-sm);
+            color: var(--earth-brown);
+        }
+        
+        .empty-state p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* ==================== LOADING ==================== */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-xl);
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--cream);
+            border-top-color: var(--crop-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* ==================== TOAST NOTIFICATIONS ==================== */
+        .toast {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            background: white;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 32px var(--shadow-heavy);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            z-index: 1000;
+            animation: slideInRight 0.4s ease-out;
+            max-width: 400px;
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--leaf-green);
+        }
+        
+        .toast.error {
+            border-left: 4px solid var(--clay-red);
+        }
+        
+        .toast .icon {
+            font-size: 1.5rem;
+        }
+        
+        /* ==================== HIDDEN CLASS ==================== */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* ==================== ANIMATIONS ==================== */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideRight {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(10px);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Add stagger delay to cards */
+        .card:nth-child(1) { animation-delay: 0s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+        .card:nth-child(5) { animation-delay: 0.4s; }
+        .card:nth-child(6) { animation-delay: 0.5s; }
+        
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: var(--space-sm);
+            }
+            
+            .header {
+                padding: var(--space-md);
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                min-width: 100px;
+                padding: var(--space-sm) var(--space-md);
+                font-size: 0.95rem;
+            }
+            
+            .form-container {
+                padding: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-logo">
+            <span class="icon">🚜</span>
+            <div>
+                <h1 class="header-title">FarmRide</h1>
+                <p class="header-subtitle">गाडी बुकिंग सिस्टम | Vehicle Booking</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="user-info hidden" id="userInfo">
+                <span>👨‍🌾</span>
+                <span id="userName">Guest</span>
+            </div>
+            <button class="btn btn-secondary hidden" id="logoutBtn" onclick="logout()">
+                <span>🚪</span> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Login/Register Section -->
+        <div id="authSection">
+            <div class="form-container">
+                <h2 style="text-align: center; margin-bottom: 2rem;">🌾 Welcome to FarmRide</h2>
+                
+                <!-- Login Form -->
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Username / यूजरनेम</label>
+                        <input type="text" id="loginUsername" class="form-input" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password / पासवर्ड</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter password">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-bottom: 1rem;" onclick="login()">
+                        <span>🔐</span> Login / लॉगिन
+                    </button>
+                    <p style="text-align: center; color: #666;">
+                        Demo: username=<strong>ramesh</strong>, password=<strong>farmer123</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Section -->
+        <div id="appSection" class="hidden">
+            <!-- Navigation -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('drivers')" id="driversTab">
+                    <span class="icon">👨‍🌾</span>
+                    <span>Drivers / चालक</span>
+                </button>
+                <button class="nav-tab" onclick="showTab('rides')" id="ridesTab">
+                    <span class="icon">🛣️</span>
+                    <span>Rides / गाड्या</span>
+                </button>
+                <button class="nav-tab" onclick="showTab('myRides')" id="myRidesTab">
+                    <span class="icon">📋</span>
+                    <span>My Rides / माझ्या गाड्या</span>
+                </button>
+            </nav>
+
+            <!-- Drivers Tab -->
+            <div id="driversContent" class="tab-content">
+                <h2 style="margin-bottom: 1.5rem;">
+                    <span>👨‍🌾</span> Available Drivers / उपलब्ध चालक
+                </h2>
+                <div id="driversList" class="cards-grid"></div>
+            </div>
+
+            <!-- Rides Tab -->
+            <div id="ridesContent" class="tab-content hidden">
+                <h2 style="margin-bottom: 1.5rem;">
+                    <span>🛣️</span> Available Rides / उपलब्ध गाड्या
+                </h2>
+                <div id="ridesList" class="cards-grid"></div>
+            </div>
+
+            <!-- My Rides Tab -->
+            <div id="myRidesContent" class="tab-content hidden">
+                <h2 style="margin-bottom: 1.5rem;">
+                    <span>📋</span> My Booked Rides / माझ्या बुक केलेल्या गाड्या
+                </h2>
+                <div id="myRidesList" class="cards-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            if (authToken && currentUser) {
+                showApp();
+                loadDrivers();
+            } else {
+                showAuth();
+            }
+        });
+        
+        // ==================== AUTHENTICATION ====================
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showToast('Please enter username and password', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showToast('Login successful! Welcome ' + currentUser.full_name, 'success');
+                    showApp();
+                    loadDrivers();
+                } else {
+                    showToast(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showToast('Connection error. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+        }
+        
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            showToast('Logged out successfully', 'success');
+            showAuth();
+        }
+        
+        function showAuth() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('appSection').classList.add('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+        }
+        
+        function showApp() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.full_name;
+        }
+        
+        // ==================== TAB NAVIGATION ====================
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Load data for the tab
+            if (tabName === 'drivers') {
+                loadDrivers();
+            } else if (tabName === 'rides') {
+                loadRides();
+            } else if (tabName === 'myRides') {
+                loadMyRides();
+            }
+        }
+        
+        // ==================== LOAD DRIVERS ====================
+        async function loadDrivers() {
+            const driversList = document.getElementById('driversList');
+            driversList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/drivers`);
+                const data = await response.json();
+                
+                if (response.ok && data.drivers.length > 0) {
+                    driversList.innerHTML = data.drivers.map(driver => `
+                        <div class="card driver-card">
+                            <div class="driver-header">
+                                <img src="${driver.driver_photo}" alt="${driver.driver_name}" class="driver-photo">
+                                <div class="driver-info">
+                                    <h3>
+                                        <span>👨‍🌾</span>
+                                        ${driver.driver_name}
+                                    </h3>
+                                    <p class="driver-phone">📞 ${driver.phone_no}</p>
+                                    <div class="status-badge ${driver.is_available ? 'available' : 'booked'}">
+                                        <span>${driver.is_available ? '✅' : '❌'}</span>
+                                        ${driver.is_available ? 'Available' : 'Busy'}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="vehicle-section">
+                                <img src="${driver.vehicle_photo}" alt="${driver.vehicle_name}" class="vehicle-photo">
+                                <h4 style="margin-bottom: 0.5rem;">🚗 ${driver.vehicle_name}</h4>
+                                <p style="color: #666; font-size: 0.95rem; margin-bottom: 0.5rem;">
+                                    <strong>Vehicle ID:</strong> ${driver.vehicle_id}
+                                </p>
+                                <div class="vehicle-type ${driver.vehicle_type}">
+                                    ${getVehicleIcon(driver.vehicle_type)}
+                                    <span>${formatVehicleType(driver.vehicle_type)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    driversList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">😔</div>
+                            <h3>No Drivers Available</h3>
+                            <p>कोणतेही चालक उपलब्ध नाहीत</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                driversList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h3>Error Loading Drivers</h3>
+                        <p>Please refresh the page</p>
+                    </div>
+                `;
+                console.error('Error loading drivers:', error);
+            }
+        }
+        
+        // ==================== LOAD RIDES ====================
+        async function loadRides() {
+            const ridesList = document.getElementById('ridesList');
+            ridesList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/rides?status=available`);
+                const data = await response.json();
+                
+                if (response.ok && data.rides.length > 0) {
+                    ridesList.innerHTML = data.rides.map(ride => createRideCard(ride, true)).join('');
+                } else {
+                    ridesList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">🚫</div>
+                            <h3>No Available Rides</h3>
+                            <p>कोणत्याही गाड्या उपलब्ध नाहीत</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                ridesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h3>Error Loading Rides</h3>
+                        <p>Please refresh the page</p>
+                    </div>
+                `;
+                console.error('Error loading rides:', error);
+            }
+        }
+        
+        // ==================== LOAD MY RIDES ====================
+        async function loadMyRides() {
+            const myRidesList = document.getElementById('myRidesList');
+            myRidesList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/dashboard/farmer`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.my_rides.length > 0) {
+                    myRidesList.innerHTML = data.my_rides.map(ride => createRideCard(ride, false)).join('');
+                } else {
+                    myRidesList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📭</div>
+                            <h3>No Booked Rides</h3>
+                            <p>तुम्ही अजून कोणतीही गाडी बुक केलेली नाही</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                myRidesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h3>Error Loading Your Rides</h3>
+                        <p>Please refresh the page</p>
+                    </div>
+                `;
+                console.error('Error loading my rides:', error);
+            }
+        }
+        
+        // ==================== BOOK RIDE ====================
+        async function bookRide(rideId) {
+            if (!confirm('Do you want to book this ride? / ही गाडी बुक करायची आहे का?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/rides/${rideId}/book`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('Ride booked successfully! / गाडी यशस्वीरित्या बुक झाली!', 'success');
+                    loadRides();
+                } else {
+                    showToast(data.error || 'Failed to book ride', 'error');
+                }
+            } catch (error) {
+                showToast('Connection error. Please try again.', 'error');
+                console.error('Error booking ride:', error);
+            }
+        }
+        
+        // ==================== HELPER FUNCTIONS ====================
+        function createRideCard(ride, showBookButton) {
+            return `
+                <div class="card ride-card">
+                    <div class="ride-header">
+                        <div>
+                            <h3>${ride.driver_name}</h3>
+                            <div class="vehicle-type ${ride.vehicle_type}">
+                                ${getVehicleIcon(ride.vehicle_type)}
+                                <span>${formatVehicleType(ride.vehicle_type)}</span>
+                            </div>
+                        </div>
+                        <div class="ride-date-time">
+                            <span class="date">📅 ${formatDate(ride.date)}</span>
+                            <span class="time">⏰ ${formatTime(ride.time)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ride-route">
+                        <div class="location">
+                            <div class="location-label">From / येथून</div>
+                            <div class="location-name">${ride.start_location}</div>
+                        </div>
+                        <div class="route-arrow">➡️</div>
+                        <div class="location">
+                            <div class="location-label">To / येथे</div>
+                            <div class="location-name">${ride.destination}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ride-details">
+                        <div class="detail-item">
+                            <span class="icon">🚛</span>
+                            <span class="text">${ride.vehicle_id}</span>
+                        </div>
+                        ${ride.cargo_type ? `
+                            <div class="detail-item">
+                                <span class="icon">📦</span>
+                                <span class="text">${ride.cargo_type}</span>
+                            </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <span class="status-badge ${ride.ride_status}">
+                                ${ride.ride_status === 'available' ? '✅ Available' : 
+                                  ride.ride_status === 'booked' ? '📌 Booked' : '✔️ Completed'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    ${showBookButton ? `
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem; justify-content: center;" onclick="bookRide(${ride.ride_id})">
+                            <span>📋</span> Book This Ride / बुक करा
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        function getVehicleIcon(vehicleType) {
+            const icons = {
+                'tractor': '🚜',
+                'truck': '🚚',
+                'tempo': '🛻',
+                'mini-truck': '🚐'
+            };
+            return icons[vehicleType] || '🚗';
+        }
+        
+        function formatVehicleType(vehicleType) {
+            const types = {
+                'tractor': 'Tractor / ट्रॅक्टर',
+                'truck': 'Truck / ट्रक',
+                'tempo': 'Tempo / टेम्पो',
+                'mini-truck': 'Mini Truck / मिनी ट्रक'
+            };
+            return types[vehicleType] || vehicleType;
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="icon">${type === 'success' ? '✅' : '❌'}</span>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.4s ease-out reverse';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
